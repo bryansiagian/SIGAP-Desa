@@ -6,8 +6,10 @@ use App\Models\ServiceType;
 use App\Models\ServiceField;
 use App\Models\ServiceApprovalStep;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
+#[Layout('layouts.app')]
 class ServiceBuilder extends Component
 {
     public $serviceTypes;

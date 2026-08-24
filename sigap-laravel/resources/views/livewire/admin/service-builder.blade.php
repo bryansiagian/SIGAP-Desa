@@ -18,10 +18,13 @@
                     <p class="font-medium">{{ $type->nama_layanan }}</p>
                     <p class="text-sm text-gray-500">{{ $type->kategori }} · {{ $type->submissions_count }} pengajuan</p>
                 </div>
-                <button wire:click="toggleStatus({{ $type->id }})"
-                    class="text-sm px-3 py-1 rounded {{ $type->status === 'aktif' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
-                    {{ $type->status }}
-                </button>
+                <div class="flex gap-2 items-center">
+                    <a href="{{ route('admin.services.fields', $type->id) }}" class="text-blue-600 text-sm">Kelola field</a>
+                    <button wire:click="toggleStatus({{ $type->id }})"
+                        class="text-sm px-3 py-1 rounded {{ $type->status === 'aktif' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
+                        {{ $type->status }}
+                    </button>
+                </div>
             </div>
         @endforeach
     </div>

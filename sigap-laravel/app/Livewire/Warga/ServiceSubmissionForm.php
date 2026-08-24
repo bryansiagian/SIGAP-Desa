@@ -8,7 +8,9 @@ use App\Models\SubmissionFile;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class ServiceSubmissionForm extends Component
 {
     use WithFileUploads;

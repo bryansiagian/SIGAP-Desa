@@ -5,7 +5,9 @@ namespace App\Livewire\Warga;
 use App\Models\ServiceSubmission;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class MySubmissions extends Component
 {
     public function render()
