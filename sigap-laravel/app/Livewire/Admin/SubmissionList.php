@@ -5,9 +5,9 @@ namespace App\Livewire\Admin;
 use App\Models\ServiceSubmission;
 use App\Models\SubmissionApproval;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\Layout;
 
 #[Layout('layouts.app')]
 class SubmissionList extends Component
@@ -37,6 +37,13 @@ class SubmissionList extends Component
     protected function processApproval($id, string $decision)
     {
         $submission = ServiceSubmission::with('serviceType.approvalSteps')->findOrFail($id);
+
+        // Guard: jangan proses lagi kalau submission sudah final
+        if (in_array($submission->status, ['selesai', 'ditolak'])) {
+            $this->selectedSubmissionId = null;
+            return;
+        }
+
         $currentStep = $submission->serviceType->approvalSteps
             ->firstWhere('urutan', $submission->current_step);
 
@@ -80,7 +87,12 @@ class SubmissionList extends Component
             ->paginate(10);
 
         $selected = $this->selectedSubmissionId
-            ? ServiceSubmission::with('serviceType.approvalSteps.role', 'files')->find($this->selectedSubmissionId)
+            ? ServiceSubmission::with([
+                'serviceType.approvalSteps.role',
+                'files',
+                'approvals.approver',
+                'approvals.step',
+            ])->find($this->selectedSubmissionId)
             : null;
 
         return view('livewire.admin.submission-list', compact('submissions', 'selected'));

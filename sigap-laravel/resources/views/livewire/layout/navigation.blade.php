@@ -23,16 +23,38 @@ new class extends Component
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}" wire:navigate>
+                    <a href="{{ route('service.index') }}" wire:navigate>
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard') }}
+                    <x-nav-link :href="route('service.index')" :active="request()->routeIs('service.index')" wire:navigate>
+                        {{ __('Layanan') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('submissions.mine')" :active="request()->routeIs('submissions.mine')" wire:navigate>
+                        {{ __('Pengajuan Saya') }}
+                    </x-nav-link>
+
+                    @role('admin|staf')
+                        <x-nav-link :href="route('admin.services')" :active="request()->routeIs('admin.services*')" wire:navigate>
+                            {{ __('Kelola Layanan') }}
+                        </x-nav-link>
+                    @endrole
+
+                    @role('admin|staf|verifikator')
+                        <x-nav-link :href="route('admin.submissions')" :active="request()->routeIs('admin.submissions')" wire:navigate>
+                            {{ __('Proses Pengajuan') }}
+                        </x-nav-link>
+                    @endrole
+
+                    @role('admin')
+                        <x-nav-link :href="route('admin.users')" :active="request()->routeIs('admin.users')" wire:navigate>
+                            {{ __('Pengguna') }}
+                        </x-nav-link>
+                    @endrole
                 </div>
             </div>
 
@@ -81,9 +103,31 @@ new class extends Component
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
-                {{ __('Dashboard') }}
+            <x-responsive-nav-link :href="route('service.index')" :active="request()->routeIs('service.index')" wire:navigate>
+                {{ __('Layanan') }}
             </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('submissions.mine')" :active="request()->routeIs('submissions.mine')" wire:navigate>
+                {{ __('Pengajuan Saya') }}
+            </x-responsive-nav-link>
+
+            @role('admin|staf')
+                <x-responsive-nav-link :href="route('admin.services')" :active="request()->routeIs('admin.services*')" wire:navigate>
+                    {{ __('Kelola Layanan') }}
+                </x-responsive-nav-link>
+            @endrole
+
+            @role('admin|staf|verifikator')
+                <x-responsive-nav-link :href="route('admin.submissions')" :active="request()->routeIs('admin.submissions')" wire:navigate>
+                    {{ __('Proses Pengajuan') }}
+                </x-responsive-nav-link>
+            @endrole
+
+            @role('admin')
+                <x-responsive-nav-link :href="route('admin.users')" :active="request()->routeIs('admin.users')" wire:navigate>
+                    {{ __('Pengguna') }}
+                </x-responsive-nav-link>
+            @endrole
         </div>
 
         <!-- Responsive Settings Options -->

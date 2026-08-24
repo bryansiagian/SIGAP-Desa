@@ -8,6 +8,10 @@ class SubmissionApproval extends Model
 {
     protected $fillable = ['submission_id', 'step_id', 'approver_id', 'status', 'catatan', 'waktu'];
 
+    protected $casts = [
+        'waktu' => 'datetime',
+    ];
+
     public function submission()
     {
         return $this->belongsTo(ServiceSubmission::class, 'submission_id');

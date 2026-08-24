@@ -25,14 +25,47 @@
 
     {{-- Panel detail --}}
     @if ($selected)
+        @php $isFinal = in_array($selected->status, ['selesai', 'ditolak']); @endphp
+
         <div class="fixed inset-0 bg-black/40 flex items-center justify-center" wire:click.self="$set('selectedSubmissionId', null)">
             <div class="bg-white rounded p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto">
-                <h2 class="font-medium mb-3">{{ $selected->serviceType->nama_layanan }}</h2>
+                <div class="flex justify-between items-start mb-3">
+                    <h2 class="font-medium">{{ $selected->serviceType->nama_layanan }}</h2>
+                    <span class="text-sm px-2 py-1 rounded
+                        {{ match($selected->status) {
+                            'selesai' => 'bg-green-100 text-green-700',
+                            'ditolak' => 'bg-red-100 text-red-700',
+                            default => 'bg-amber-100 text-amber-700',
+                        } }}">
+                        {{ $selected->status }}
+                    </span>
+                </div>
 
                 @foreach ($selected->fields_snapshot as $field)
                     <div class="mb-2 text-sm">
                         <span class="text-gray-500">{{ $field['label'] }}:</span>
-                        <span>{{ $selected->data[$field['field_key']] ?? '-' }}</span>
+
+                        @if ($field['field_type'] === 'file')
+                            @php
+                                $file = $selected->files->firstWhere('field_key', $field['field_key']);
+                            @endphp
+
+                            @if ($file)
+                                @if (str_starts_with($file->mime_type, 'image/'))
+                                    <a href="{{ route('admin.files.show', $file) }}" target="_blank">
+                                        <img src="{{ route('admin.files.show', $file) }}" class="mt-1 max-w-xs rounded border" alt="{{ $field['label'] }}">
+                                    </a>
+                                @else
+                                    <a href="{{ route('admin.files.show', $file) }}" target="_blank" class="text-blue-600">
+                                        {{ $file->original_filename }}
+                                    </a>
+                                @endif
+                            @else
+                                <span class="text-gray-400">-</span>
+                            @endif
+                        @else
+                            <span>{{ $selected->data[$field['field_key']] ?? '-' }}</span>
+                        @endif
                     </div>
                 @endforeach
 
@@ -45,13 +78,44 @@
                     </div>
                 @endif
 
-                <textarea wire:model="catatan" placeholder="Catatan (opsional)" class="w-full border rounded p-2 mt-3 text-sm"></textarea>
+                {{-- Riwayat approval --}}
+                @if ($selected->approvals->count())
+                    <div class="mt-4 border-t pt-3">
+                        <p class="text-sm font-medium mb-2">Riwayat Persetujuan</p>
+                        @foreach ($selected->approvals as $approval)
+                            <div class="text-sm mb-2 flex justify-between items-start">
+                                <div>
+                                    <span class="{{ $approval->status === 'disetujui' ? 'text-green-700' : 'text-red-700' }} font-medium">
+                                        {{ ucfirst($approval->status) }}
+                                    </span>
+                                    oleh {{ $approval->approver->name ?? 'Pengguna terhapus' }}
+                                    <span class="text-gray-400">({{ $approval->step->nama_tahap ?? '-' }})</span>
+                                    @if ($approval->catatan)
+                                        <p class="text-gray-500 italic">"{{ $approval->catatan }}"</p>
+                                    @endif
+                                </div>
+                                <span class="text-gray-400 text-xs whitespace-nowrap ms-2">
+                                    {{ $approval->waktu?->diffForHumans() }}
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
 
-                <div class="flex gap-2 mt-3">
-                    <button wire:click="approve({{ $selected->id }})" class="bg-green-600 text-white px-4 py-2 rounded text-sm">Setujui</button>
-                    <button wire:click="reject({{ $selected->id }})" class="bg-red-600 text-white px-4 py-2 rounded text-sm">Tolak</button>
-                    <button wire:click="$set('selectedSubmissionId', null)" class="text-gray-600 px-4 py-2 text-sm">Tutup</button>
-                </div>
+                {{-- Tombol aksi hanya muncul kalau belum final --}}
+                @if (! $isFinal)
+                    <textarea wire:model="catatan" placeholder="Catatan (opsional)" class="w-full border rounded p-2 mt-3 text-sm"></textarea>
+
+                    <div class="flex gap-2 mt-3">
+                        <button wire:click="approve({{ $selected->id }})" class="bg-green-600 text-white px-4 py-2 rounded text-sm">Setujui</button>
+                        <button wire:click="reject({{ $selected->id }})" class="bg-red-600 text-white px-4 py-2 rounded text-sm">Tolak</button>
+                        <button wire:click="$set('selectedSubmissionId', null)" class="text-gray-600 px-4 py-2 text-sm">Tutup</button>
+                    </div>
+                @else
+                    <div class="mt-4">
+                        <button wire:click="$set('selectedSubmissionId', null)" class="text-gray-600 px-4 py-2 text-sm border rounded">Tutup</button>
+                    </div>
+                @endif
             </div>
         </div>
     @endif

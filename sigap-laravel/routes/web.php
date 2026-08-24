@@ -24,6 +24,9 @@ Route::get('/', function () {
 Route::get('/layanan/{serviceType:key}', \App\Livewire\Warga\ServiceSubmissionForm::class)
     ->name('service.submit');
 
+Route::get('/layanan', \App\Livewire\Warga\ServiceIndex::class)
+    ->name('service.index');
+
 /*
 |--------------------------------------------------------------------------
 | Halaman Bawaan Breeze
@@ -75,6 +78,20 @@ Route::middleware(['auth'])
         Route::get('/users', \App\Livewire\Admin\UserManagement::class)
             ->middleware('role:admin')
             ->name('users');
-    });
 
+        // Serve file terlampir (foto KTP/KK dll) dengan pengecekan otorisasi,
+        // bukan lewat storage:link publik
+        Route::get('/files/{file}', function (\App\Models\SubmissionFile $file) {
+            $field = collect($file->submission->fields_snapshot)->firstWhere('field_key', $file->field_key);
+            $isSensitive = $field['is_sensitive'] ?? false;
+            $disk = $isSensitive ? 'local' : 'public';
+
+            abort_unless(\Storage::disk($disk)->exists($file->stored_path), 404);
+
+            return \Storage::disk($disk)->response($file->stored_path, $file->original_filename);
+        })
+            ->middleware('role:admin|staf|verifikator')
+            ->name('files.show');
+    });
+    
 require __DIR__.'/auth.php';
