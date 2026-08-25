@@ -36,9 +36,8 @@ class SubmissionList extends Component
 
     protected function processApproval($id, string $decision)
     {
-        $submission = ServiceSubmission::with('serviceType.approvalSteps')->findOrFail($id);
+        $submission = ServiceSubmission::with('serviceType.approvalSteps.role')->findOrFail($id);
 
-        // Guard: jangan proses lagi kalau submission sudah final
         if (in_array($submission->status, ['selesai', 'ditolak'])) {
             $this->selectedSubmissionId = null;
             return;
@@ -49,6 +48,13 @@ class SubmissionList extends Component
 
         if (! $currentStep) {
             return;
+        }
+
+        // Guard utama: user yang login HARUS punya role yang sesuai tahap ini.
+        // Ini pertahanan di server, bukan cuma sembunyikan tombol di UI —
+        // supaya tidak bisa diakali walau request dikirim manual.
+        if (! Auth::user()->hasRole($currentStep->role->name)) {
+            abort(403, 'Anda tidak berwenang memproses tahap ini.');
         }
 
         SubmissionApproval::create([
@@ -95,6 +101,15 @@ class SubmissionList extends Component
             ])->find($this->selectedSubmissionId)
             : null;
 
-        return view('livewire.admin.submission-list', compact('submissions', 'selected'));
+        // Tentukan apakah user yang login boleh bertindak di tahap SAAT INI
+        $canAct = false;
+        if ($selected && ! in_array($selected->status, ['selesai', 'ditolak'])) {
+            $currentStep = $selected->serviceType->approvalSteps
+                ->firstWhere('urutan', $selected->current_step);
+
+            $canAct = $currentStep && Auth::user()->hasRole($currentStep->role->name);
+        }
+
+        return view('livewire.admin.submission-list', compact('submissions', 'selected', 'canAct'));
     }
 }

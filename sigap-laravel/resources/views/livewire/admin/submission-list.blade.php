@@ -27,7 +27,7 @@
     @if ($selected)
         @php $isFinal = in_array($selected->status, ['selesai', 'ditolak']); @endphp
 
-        <div class="fixed inset-0 bg-black/40 flex items-center justify-center" wire:click.self="$set('selectedSubmissionId', null)">
+        <div wire:key="modal-{{ $selected->id }}" class="fixed inset-0 bg-black/40 flex items-center justify-center" wire:click.self="$set('selectedSubmissionId', null)">
             <div class="bg-white rounded p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto">
                 <div class="flex justify-between items-start mb-3">
                     <h2 class="font-medium">{{ $selected->serviceType->nama_layanan }}</h2>
@@ -42,7 +42,7 @@
                 </div>
 
                 @foreach ($selected->fields_snapshot as $field)
-                    <div class="mb-2 text-sm">
+                    <div wire:key="field-{{ $field['field_key'] }}" class="mb-2 text-sm">
                         <span class="text-gray-500">{{ $field['label'] }}:</span>
 
                         @if ($field['field_type'] === 'file')
@@ -73,7 +73,7 @@
                     <div class="mt-3">
                         <p class="text-sm font-medium mb-1">Lampiran</p>
                         @foreach ($selected->files as $file)
-                            <p class="text-sm text-blue-600">{{ $file->original_filename }}</p>
+                            <p wire:key="file-{{ $file->id }}" class="text-sm text-blue-600">{{ $file->original_filename }}</p>
                         @endforeach
                     </div>
                 @endif
@@ -83,7 +83,7 @@
                     <div class="mt-4 border-t pt-3">
                         <p class="text-sm font-medium mb-2">Riwayat Persetujuan</p>
                         @foreach ($selected->approvals as $approval)
-                            <div class="text-sm mb-2 flex justify-between items-start">
+                            <div wire:key="approval-{{ $approval->id }}" class="text-sm mb-2 flex justify-between items-start">
                                 <div>
                                     <span class="{{ $approval->status === 'disetujui' ? 'text-green-700' : 'text-red-700' }} font-medium">
                                         {{ ucfirst($approval->status) }}
@@ -103,7 +103,7 @@
                 @endif
 
                 {{-- Tombol aksi hanya muncul kalau belum final --}}
-                @if (! $isFinal)
+                @if ($canAct)
                     <textarea wire:model="catatan" placeholder="Catatan (opsional)" class="w-full border rounded p-2 mt-3 text-sm"></textarea>
 
                     <div class="flex gap-2 mt-3">
@@ -112,6 +112,9 @@
                         <button wire:click="$set('selectedSubmissionId', null)" class="text-gray-600 px-4 py-2 text-sm">Tutup</button>
                     </div>
                 @else
+                    @if (! in_array($selected->status, ['selesai', 'ditolak']))
+                        <p class="text-sm text-gray-500 mt-3 italic">Menunggu tindakan dari pihak lain di tahap ini.</p>
+                    @endif
                     <div class="mt-4">
                         <button wire:click="$set('selectedSubmissionId', null)" class="text-gray-600 px-4 py-2 text-sm border rounded">Tutup</button>
                     </div>
