@@ -6,9 +6,9 @@ use App\Models\ServiceType;
 use App\Models\ServiceSubmission;
 use App\Models\SubmissionFile;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Livewire\Attributes\Layout;
 
 #[Layout('layouts.app')]
 class ServiceSubmissionForm extends Component
@@ -18,10 +18,26 @@ class ServiceSubmissionForm extends Component
     public ServiceType $serviceType;
     public array $formData = [];
     public array $formFiles = [];
+    public bool $isAvailable = true;
+    public string $unavailableReason = '';
 
     public function mount(ServiceType $serviceType)
     {
-        $this->serviceType = $serviceType->load('fields');
+        $this->serviceType = $serviceType->load(['fields', 'approvalSteps']);
+
+        // Guard 1: layanan harus berstatus aktif
+        if ($this->serviceType->status !== 'aktif') {
+            $this->isAvailable = false;
+            $this->unavailableReason = 'Layanan ini sedang tidak tersedia.';
+            return;
+        }
+
+        // Guard 2: layanan harus punya minimal 1 tahap persetujuan
+        if ($this->serviceType->approvalSteps->isEmpty()) {
+            $this->isAvailable = false;
+            $this->unavailableReason = 'Layanan ini belum bisa diajukan saat ini. Silakan hubungi admin desa.';
+            return;
+        }
 
         foreach ($this->serviceType->fields as $field) {
             if ($field->field_type !== 'file') {
@@ -57,6 +73,12 @@ class ServiceSubmissionForm extends Component
 
     public function submit()
     {
+        // Guard tambahan di submit() — jaga-jaga kalau ada yang akal-akalan
+        // kirim request langsung tanpa lewat mount() (misal replay request lama)
+        if (! $this->isAvailable) {
+            abort(403, 'Layanan ini tidak tersedia untuk diajukan.');
+        }
+
         if (! Auth::check()) {
             session()->put('url.intended', request()->fullUrl());
             return redirect()->route('login');
