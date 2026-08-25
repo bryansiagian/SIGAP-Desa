@@ -27,6 +27,12 @@ class ServiceTypeSeeder extends Seeder
             ['field_key' => 'foto_bukti', 'label' => 'Foto Bukti', 'field_type' => 'file', 'validation_rule' => 'nullable|file|image|max:5120', 'is_required' => false, 'urutan' => 5],
         ]);
 
+        $pengaduan->approvalSteps()->create([
+            'urutan' => 1,
+            'nama_tahap' => 'Verifikasi Staf Desa',
+            'role_id' => \Spatie\Permission\Models\Role::where('name', 'staf')->first()->id,
+        ]);
+
         // 2. PERIZINAN
         $perizinan = ServiceType::create([
             'key' => 'perizinan',
@@ -44,6 +50,17 @@ class ServiceTypeSeeder extends Seeder
             ['field_key' => 'foto_ktp', 'label' => 'Foto KTP', 'field_type' => 'file', 'validation_rule' => 'required|file|image|max:5120', 'is_required' => true, 'urutan' => 5],
         ]);
 
+        $perizinan->approvalSteps()->create([
+            'urutan' => 1,
+            'nama_tahap' => 'Verifikasi Staf Desa',
+            'role_id' => \Spatie\Permission\Models\Role::where('name', 'staf')->first()->id,
+        ]);
+        $perizinan->approvalSteps()->create([
+            'urutan' => 2,
+            'nama_tahap' => 'Persetujuan Admin',
+            'role_id' => \Spatie\Permission\Models\Role::where('name', 'admin')->first()->id,
+        ]);
+
         // 3. PEMBUKUAN
         $pembukuan = ServiceType::create([
             'key' => 'pembukuan',
@@ -59,6 +76,12 @@ class ServiceTypeSeeder extends Seeder
             ['field_key' => 'keterangan', 'label' => 'Keterangan', 'field_type' => 'textarea', 'validation_rule' => 'required|string|max:500', 'is_required' => true, 'urutan' => 3],
             ['field_key' => 'tanggal_transaksi', 'label' => 'Tanggal Transaksi', 'field_type' => 'date', 'validation_rule' => 'required|date', 'is_required' => true, 'urutan' => 4],
             ['field_key' => 'bukti_transaksi', 'label' => 'Bukti Transaksi', 'field_type' => 'file', 'validation_rule' => 'nullable|file|max:5120', 'is_required' => false, 'urutan' => 5],
+        ]);
+
+        $pembukuan->approvalSteps()->create([
+            'urutan' => 1,
+            'nama_tahap' => 'Verifikasi Staf Desa',
+            'role_id' => \Spatie\Permission\Models\Role::where('name', 'staf')->first()->id,
         ]);
     }
 
