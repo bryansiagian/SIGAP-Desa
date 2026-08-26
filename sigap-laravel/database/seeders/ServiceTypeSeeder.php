@@ -47,7 +47,7 @@ class ServiceTypeSeeder extends Seeder
             ['field_key' => 'jenis_usaha', 'label' => 'Jenis Usaha', 'field_type' => 'text', 'validation_rule' => 'required|string|max:100', 'is_required' => true, 'urutan' => 2],
             ['field_key' => 'nik_pemilik', 'label' => 'NIK Pemilik', 'field_type' => 'text', 'validation_rule' => 'required|digits:16', 'is_required' => true, 'urutan' => 3],
             ['field_key' => 'alamat_usaha', 'label' => 'Alamat Usaha', 'field_type' => 'textarea', 'validation_rule' => 'required|string|max:500', 'is_required' => true, 'urutan' => 4],
-            ['field_key' => 'foto_ktp', 'label' => 'Foto KTP', 'field_type' => 'file', 'validation_rule' => 'required|file|image|max:5120', 'is_required' => true, 'urutan' => 5],
+            ['field_key' => 'foto_ktp', 'label' => 'Foto KTP', 'field_type' => 'file', 'validation_rule' => 'required|file|image|max:5120', 'is_required' => true, 'is_sensitive' => true, 'urutan' => 5],
         ]);
 
         $perizinan->approvalSteps()->create([
