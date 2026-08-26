@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ServiceField extends Model
 {
-    protected $fillable = ['service_type_id', 'field_key', 'label', 'field_type', 'options', 'validation_rule', 'is_required', 'urutan'];
+    protected $fillable = ['service_type_id', 'field_key', 'label', 'field_type', 'options', 'validation_rule', 'is_required', 'is_sensitive', 'urutan'];
 
     protected $casts = [
         'options' => 'array',
