@@ -80,7 +80,11 @@ class SubmissionList extends Component
                 ]);
             }
         }
-
+        
+        $this->dispatch('toast',
+            message: $decision === 'disetujui' ? 'Pengajuan disetujui.' : 'Pengajuan ditolak.',
+            type: $decision === 'disetujui' ? 'success' : 'error'
+        );
         $this->selectedSubmissionId = null;
         $this->catatan = '';
     }

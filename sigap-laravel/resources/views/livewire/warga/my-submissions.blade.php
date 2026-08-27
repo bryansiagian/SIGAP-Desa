@@ -1,22 +1,27 @@
-<div class="max-w-2xl mx-auto p-6">
-    <h1 class="text-xl font-medium mb-4">Pengajuan Saya</h1>
+<div class="max-w-2xl mx-auto px-6 py-10">
+    <h1 class="font-display text-2xl font-semibold mb-1">Pengajuan Saya</h1>
+    <p class="text-soil/60 text-sm mb-6">Riwayat dan status pengajuan layanan kamu</p>
 
-    @forelse ($submissions as $submission)
-        <div wire:key="mysub-{{ $submission->id }}" class="border rounded p-3 mb-2">
-            <div class="flex justify-between items-center">
-                <p class="font-medium">{{ $submission->serviceType->nama_layanan }}</p>
-                <span class="text-sm px-2 py-1 rounded
-                    {{ match($submission->status) {
-                        'selesai' => 'bg-green-100 text-green-700',
-                        'ditolak' => 'bg-red-100 text-red-700',
-                        default => 'bg-amber-100 text-amber-700',
-                    } }}">
-                    {{ $submission->status }}
-                </span>
+    @if (session('success'))
+        <div class="bg-padi/10 text-padi border border-padi/20 p-3 rounded-lg mb-5 text-sm">{{ session('success') }}</div>
+    @endif
+
+    <div class="space-y-3">
+        @forelse ($submissions as $submission)
+            <x-ui.card wire:key="mysub-{{ $submission->id }}" class="flex justify-between items-center">
+                <div>
+                    <p class="font-medium">{{ $submission->serviceType->nama_layanan }}</p>
+                    <p class="text-sm text-soil/50 mt-0.5">Diajukan {{ $submission->created_at->diffForHumans() }}</p>
+                </div>
+                <x-ui.badge :status="$submission->status" />
+            </x-ui.card>
+        @empty
+            <div class="text-center py-16 bg-surface border border-dashed border-soil/20 rounded-xl">
+                <p class="text-soil/50 mb-3">Belum ada pengajuan.</p>
+                <a href="{{ route('service.index') }}" wire:navigate class="text-clay text-sm font-medium">
+                    Ajukan layanan pertama &rarr;
+                </a>
             </div>
-            <p class="text-sm text-gray-500">Diajukan {{ $submission->created_at->diffForHumans() }}</p>
-        </div>
-    @empty
-        <p class="text-gray-500">Belum ada pengajuan.</p>
-    @endforelse
+        @endforelse
+    </div>
 </div>
