@@ -14,7 +14,7 @@ class UserManagement extends Component
     {
         $user = User::findOrFail($userId);
         $user->syncRoles([$roleName]);
-        session()->flash('success', "Role {$user->name} diubah menjadi {$roleName}.");
+        $this->dispatch('toast', message: "Role {$user->name} diubah menjadi {$roleName}.", type: 'success');
     }
 
     public function render()

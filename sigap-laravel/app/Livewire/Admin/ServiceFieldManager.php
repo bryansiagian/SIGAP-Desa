@@ -107,7 +107,7 @@ class ServiceFieldManager extends Component
             }
         }
 
-        session()->flash('success', 'Perubahan field berhasil disimpan.');
+        $this->dispatch('toast', message: 'Perubahan field berhasil disimpan.', type: 'success');
         $this->loadFields();
     }
 

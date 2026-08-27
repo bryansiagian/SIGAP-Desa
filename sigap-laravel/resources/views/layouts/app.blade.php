@@ -12,6 +12,7 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
+    @include('partials.toast-flash')
     <body class="font-sans antialiased bg-paper text-soil">
         <div class="min-h-screen">
             <livewire:layout.navigation />

@@ -14,7 +14,6 @@ class ServiceBuilder extends Component
 {
     public $serviceTypes;
 
-    // form state
     public string $nama_layanan = '';
     public string $kategori = '';
     public array $fields = [];
@@ -34,6 +33,16 @@ class ServiceBuilder extends Component
     public function loadServiceTypes()
     {
         $this->serviceTypes = ServiceType::withCount('submissions')->latest()->get();
+    }
+
+    public function openForm()
+    {
+        $this->showForm = true;
+    }
+
+    public function closeForm()
+    {
+        $this->showForm = false;
     }
 
     public function addField()
@@ -114,7 +123,8 @@ class ServiceBuilder extends Component
             ]);
         }
 
-        session()->flash('success', "Layanan \"{$this->nama_layanan}\" berhasil dibuat.");
+        $this->dispatch('toast', message: "Layanan \"{$this->nama_layanan}\" berhasil dibuat.", type: 'success');
+
         $this->reset(['nama_layanan', 'kategori', 'fields', 'approvalSteps', 'showForm']);
         $this->addField();
         $this->addApprovalStep();
@@ -123,9 +133,14 @@ class ServiceBuilder extends Component
 
     public function toggleStatus(ServiceType $serviceType)
     {
-        $serviceType->update([
-            'status' => $serviceType->status === 'aktif' ? 'nonaktif' : 'aktif',
-        ]);
+        $newStatus = $serviceType->status === 'aktif' ? 'nonaktif' : 'aktif';
+        $serviceType->update(['status' => $newStatus]);
+
+        $this->dispatch('toast',
+            message: "\"{$serviceType->nama_layanan}\" sekarang {$newStatus}.",
+            type: 'success'
+        );
+
         $this->loadServiceTypes();
     }
 
