@@ -83,7 +83,11 @@ class SubmissionList extends Component
                 ]);
             }
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 3a4fc538fd139f03e6dcde301c8d0a5f5809f818
         $this->dispatch('toast',
             message: $decision === 'disetujui' ? 'Pengajuan disetujui.' : 'Pengajuan ditolak.',
             type: $decision === 'disetujui' ? 'success' : 'error'

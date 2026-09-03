@@ -13,6 +13,7 @@
                     <p class="font-medium">{{ $submission->serviceType->nama_layanan }}</p>
                     <p class="text-sm text-soil/50 mt-0.5">Diajukan {{ $submission->created_at->diffForHumans() }}</p>
                 </div>
+<<<<<<< HEAD
                 <div class="flex items-center gap-3">
                     @if ($submission->status === 'selesai')
                         <a href="{{ route('submissions.surat', $submission) }}" class="text-clay text-sm font-medium">
@@ -21,6 +22,9 @@
                     @endif
                     <x-ui.badge :status="$submission->status" />
                 </div>
+=======
+                <x-ui.badge :status="$submission->status" />
+>>>>>>> 3a4fc538fd139f03e6dcde301c8d0a5f5809f818
             </x-ui.card>
         @empty
             <div class="text-center py-16 bg-surface border border-dashed border-soil/20 rounded-xl">
