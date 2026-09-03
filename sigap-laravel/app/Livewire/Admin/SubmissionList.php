@@ -72,7 +72,10 @@ class SubmissionList extends Component
             $totalSteps = $submission->serviceType->approvalSteps->count();
 
             if ($submission->current_step >= $totalSteps) {
-                $submission->update(['status' => 'selesai']);
+                $submission->update([
+                    'status' => 'selesai',
+                    'nomor_surat' => $this->generateNomorSurat($submission),
+                ]);
             } else {
                 $submission->update([
                     'current_step' => $submission->current_step + 1,
@@ -80,7 +83,7 @@ class SubmissionList extends Component
                 ]);
             }
         }
-        
+
         $this->dispatch('toast',
             message: $decision === 'disetujui' ? 'Pengajuan disetujui.' : 'Pengajuan ditolak.',
             type: $decision === 'disetujui' ? 'success' : 'error'
@@ -115,5 +118,15 @@ class SubmissionList extends Component
         }
 
         return view('livewire.admin.submission-list', compact('submissions', 'selected', 'canAct'));
+    }
+
+    protected function generateNomorSurat(ServiceSubmission $submission): string
+    {
+        return sprintf(
+            '%03d/%s/%s',
+            $submission->id,
+            strtoupper(substr($submission->serviceType->key, 0, 3)),
+            now()->format('m/Y')
+        );
     }
 }

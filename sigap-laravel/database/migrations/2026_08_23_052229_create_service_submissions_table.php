@@ -16,6 +16,7 @@ return new class extends Migration
             $table->jsonb('fields_snapshot')->nullable(); // salinan definisi field saat submit (untuk versioning)
             $table->unsignedInteger('current_step')->default(1);
             $table->string('status')->default('diajukan'); // diajukan / diproses / selesai / ditolak
+            $table->string('nomor_surat')->nullable()->unique();
             $table->timestamps();
 
             $table->index('service_type_id');

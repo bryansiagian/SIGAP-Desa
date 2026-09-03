@@ -13,7 +13,14 @@
                     <p class="font-medium">{{ $submission->serviceType->nama_layanan }}</p>
                     <p class="text-sm text-soil/50 mt-0.5">Diajukan {{ $submission->created_at->diffForHumans() }}</p>
                 </div>
-                <x-ui.badge :status="$submission->status" />
+                <div class="flex items-center gap-3">
+                    @if ($submission->status === 'selesai')
+                        <a href="{{ route('submissions.surat', $submission) }}" class="text-clay text-sm font-medium">
+                            Unduh Surat
+                        </a>
+                    @endif
+                    <x-ui.badge :status="$submission->status" />
+                </div>
             </x-ui.card>
         @empty
             <div class="text-center py-16 bg-surface border border-dashed border-soil/20 rounded-xl">
