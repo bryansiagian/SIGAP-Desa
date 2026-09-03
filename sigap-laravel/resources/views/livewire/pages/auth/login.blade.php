@@ -32,9 +32,9 @@ new #[Layout('layouts.guest')] class extends Component
         $user = Auth::user();
 
         return match (true) {
-            $user->hasRole('admin') => 'admin.services',
-            $user->hasRole('staf') => 'admin.services',
-            $user->hasRole('verifikator') => 'admin.submissions',
+            $user->hasRole('admin') => 'admin.dashboard',
+            $user->hasRole('staf') => 'admin.dashboard',
+            $user->hasRole('verifikator') => 'admin.dashboard',
             default => 'submissions.mine', // warga
         };
     }
