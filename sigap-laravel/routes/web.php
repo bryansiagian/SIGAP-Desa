@@ -41,6 +41,9 @@ Route::get('/profile', function () {
     return view('profile');
 })->middleware(['auth'])->name('profile');
 
+Route::get('/verifikasi/{submission}/{hash}', [\App\Http\Controllers\SuratController::class, 'verify'])
+    ->name('submissions.verify');
+
 /*
 |--------------------------------------------------------------------------
 | Halaman Warga (Wajib Login)
@@ -50,6 +53,11 @@ Route::get('/profile', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/pengajuan-saya', \App\Livewire\Warga\MySubmissions::class)
         ->name('submissions.mine');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pengajuan-saya/{submission}/surat', [\App\Http\Controllers\SuratController::class, 'download'])
+        ->name('submissions.surat');
 });
 
 /*
@@ -79,6 +87,10 @@ Route::middleware(['auth'])
             ->middleware('role:admin')
             ->name('users');
 
+        Route::get('/dashboard', \App\Livewire\Admin\Dashboard::class)
+            ->middleware('role:admin|staf|verifikator')
+            ->name('dashboard');
+
         // Serve file terlampir (foto KTP/KK dll) dengan pengecekan otorisasi,
         // bukan lewat storage:link publik
         Route::get('/files/{file}', function (\App\Models\SubmissionFile $file) {
@@ -93,5 +105,5 @@ Route::middleware(['auth'])
             ->middleware('role:admin|staf|verifikator')
             ->name('files.show');
     });
-    
+
 require __DIR__.'/auth.php';
